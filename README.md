@@ -52,9 +52,5 @@
     > *python manage.py migrate*
 
 
-# Coi log: mình sẽ coi theo tail log, tức là coi ở cuối file log của docker, và thêm -f (--follow) để khi có log mới thì nó cũng sẽ append thêm luôn
-ví dụ log có tail nhưng ko có -f: sau khi chạy lệnh nó sẽ thoát khỏi file log luôn, tức là chỉ hiện tail 100 dòng cuối file
-còn nếu có -f: nó sẽ giữ luôn trạng thái log, khi có lệnh gì hay log mới nó sẽ hiện lên luôn, đó Ngân chạy source web là hiểu :D 
 
-docker logs -f --tail 100 social-mysql # xem log 100 dòng cuối cùng và follow khi có dòng mới dc thêm vào log
 
