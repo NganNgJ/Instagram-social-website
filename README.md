@@ -11,12 +11,13 @@
 | 3 | Reaction | Like/Dislike | `POST`
 | 4 | Comment | a. Tag friends <br> b. Edit comment | `PUT`|
 | 5 | Delete | a. Posts <br> b. Comments | `DELETE` |
-| 6 | Search/filter | a. Contents <br> b. Friends' name <br> c. Tags | `GET` |
-| 7 | List posts | a. Show detail? <br> b. Total likes | `GET` |
-| 8 | Add friend | Follow/ Unfollow
-| 9 | Profiles | a. Edit infor <br> b. Upload avatar <br> c. Show profile| `POST`|
-| 10| Settings | a. Block accounts <br> b. Languages | `PUT`|
-| 11| Authentication and permission | a. Create new account <br> b. Check authentication <br> c. Verify OTP | 
+| 6 | Download | Allow download image, video
+| 7 | Search/filter | a. Contents <br> b. Friends' name <br> c. Tags | `GET` |
+| 8 | List posts | a. Show detail & .... <br> b. Total likes | `GET` |
+| 9 | Add friend | Follow/ Unfollow
+| 10 | Profiles | a. Edit infor <br> b. Upload avatar <br> c. Show profile| `POST`|
+| 11| Settings | a. Block accounts <br> b. Languages |`PUT`|
+| 12| Authentication and permission | a. Create new account <br> b. Check authentication <br> c. Verify OTP | 
 
 
 ---
