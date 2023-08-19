@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,11 +81,10 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'social_website', # Tên database
-        'USER': 'root',     # Tên người dùng
-        'PASSWORD': 'password', # Mật khẩu
-        'HOST': 'social-mysql', # Tên host của container MySQL
-        'PORT': '3306',
+        'NAME': os.getenv('MYSQL_DATABASE'), # Tên database
+        'USER': os.getenv('MYSQL_USER'),     # Tên người dùng
+        'PASSWORD': os.getenv('MYSQL_PASSWORD'), # Mật khẩu
+        'HOST': os.getenv('DB_HOST'), # Tên host của container MySQL
     }
 }
 
