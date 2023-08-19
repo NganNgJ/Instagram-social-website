@@ -24,7 +24,9 @@ This is a social website project running as Instagram, however, it will have som
 ### 3. Sources
 #### Build containers by Docker compose:
 Check docker-compose.yml 
-> cmd: docker compose up --build -d  
+> **build**: docker compose up --build -d  
+> **remove (all containers & images)**: docker compose down --rmi all
+> **delete containers**: docker compose  down
 
 #### Migrate database 
 1. Execute to container application 
