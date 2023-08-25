@@ -10,6 +10,4 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('test', get_test)
-  
 ]
