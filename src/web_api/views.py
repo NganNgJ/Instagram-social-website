@@ -26,7 +26,6 @@ class RegistrationAPIview(generics.GenericAPIView):
         return Response({'detail': serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         
 
-
 @api_view(['GET'])
 # @permission_classes([AllowAny])
 def get_test(request):
