@@ -38,14 +38,14 @@ class Post(AbstractEntity, models.Model):
 
 class Image(AbstractEntity,models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True, related_name= 'images')
-    image = models.ImageField(null=True, blank=True, upload_to='src/images/')
+    image = models.ImageField(null=True, blank=True, upload_to='src/media/images/')
 
     class Meta:
         db_table = 'images'
 
 class Video(AbstractEntity,models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True, related_name= 'videos')
-    video = models.FileField(null=True, blank=True, upload_to='src/videos/')
+    video = models.FileField(null=True, blank=True, upload_to='src/media/videos/')
 
     class Meta:
         db_table = 'videos'
