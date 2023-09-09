@@ -3,16 +3,16 @@ from django.db import models
 from django.contrib.auth.models import User 
 
 class AbstractEntity(models.Model):
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=None)
+    updated_at = models.DateTimeField(default=None)
 
     class Meta:
         abstract = True
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.created_at = datetime.datetime.now()
-        self.updated_at = datetime.datetime.now()
+            self.created_at = datetime.now()
+        self.updated_at = datetime.now()
         return super(AbstractEntity, self).save(*args, **kwargs)
 
 class Friend(AbstractEntity, models.Model):
@@ -37,27 +37,29 @@ class Post(AbstractEntity, models.Model):
     
 class UserTag(AbstractEntity, models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'user_tags')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name= 'users')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name= 'user_tags')
     
     class Meta:
         db_table = 'usertags'
 
-class Image(AbstractEntity,models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True, related_name= 'images')
-    image = models.ImageField(null=True, blank=True, upload_to='src/media/images/')
+
+class UploadFile(AbstractEntity, models.Model):
+    file = models.FileField(null=False, blank=True)
+    file_type = models.CharField(max_length=255, null=True)
 
     class Meta:
-        db_table = 'images'
+        db_table = 'files'
 
-class Video(AbstractEntity,models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True, related_name= 'videos')
-    video = models.FileField(null=True, blank=True, upload_to='src/media/videos/')
+
+class PostFile(AbstractEntity, models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_files')
+    file = models.ForeignKey(UploadFile, on_delete=models.CASCADE, null=True, related_name= 'post_files')
 
     class Meta:
-        db_table = 'videos'
+        db_table = 'posts_files'
 
 
-class Reaction(AbstractEntity,models.Model):
+class Reaction(AbstractEntity, models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'reactions')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_reacts')
     
@@ -65,7 +67,7 @@ class Reaction(AbstractEntity,models.Model):
         db_table= 'reactions'
 
 
-class Comment(AbstractEntity,models.Model):
+class Comment(AbstractEntity, models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_comments')
     description = models.TextField()
@@ -73,7 +75,7 @@ class Comment(AbstractEntity,models.Model):
     class Meta:
         db_table= 'comments'
 
-class Share(AbstractEntity,models.Model):
+class Share(AbstractEntity, models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'shares')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_shares')
     

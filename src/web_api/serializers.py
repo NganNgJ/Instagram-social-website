@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User 
 from web_api.models import (
-    Post,Image,Video,UserTag
+    Post,UploadFile,UserTag
 )
 
 #tận dụng validate, create, post trong serializer
@@ -28,43 +28,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
         
-class ImageSerializer(serializers.ModelSerializer):
+class UploadFileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Image
-        fields = ('image',)
-
-class VideoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Video
-        fields = ('video',)
-
-class UsertagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserTag
-        fields = ('user',)
+        model = UploadFile
+        fields = '__all__'
 
 class PostCreateSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many=True, required=False)
-    videos = VideoSerializer(many=True, required=False)
-    users = UsertagSerializer(many=True, required=False)
     
     class Meta:
         model = Post 
-        fields = ('description', 'user_id', 'tagged_user', 'is_hidden', 'images', 'videos')
+        fields = '__all__'
 
     def create(self,validated_data):
-        images_data = validated_data.pop('images',[])
-        videos_data = validated_data.pop('videos',[])
-        users_tag_data = validated_data.pop('users', [])
         post = Post.objects.create(**validated_data)
-        
-        for image in images_data:
-            Image.objects.create(post=post, **image)
-
-        for video in videos_data:
-            Video.objects.create(post=post, **video)
-        
-        for user in users_tag_data:
-            UserTag.objects.create(post=post, **user)
-
         return post

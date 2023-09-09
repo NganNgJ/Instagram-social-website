@@ -9,10 +9,11 @@ from web_api.enum import (
     Status
 )
 from .models import (
-    Post
+    Post,UploadFile
 )
 from .serializers import (
     RegistrationSerializer,
+    UploadFileSerializer,
     PostCreateSerializer
 )
 import uuid
@@ -29,6 +30,17 @@ class RegistrationAPIview(generics.GenericAPIView):
             return Response(status=status.HTTP_201_CREATED, data=serializer.data)
         return Response({'detail': serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         
+
+class UploadFileViewset(viewsets.ModelViewSet):
+    serializer_class = UploadFileSerializer
+    queryset = UploadFile.objects.all()
+
+    def perform_create(self, serializer):
+        file = self.request.data.get('file')
+        file_type = file.name.split('.')[-1]
+
+        serializer.save(file_type = file_type)
+
 
 class PostCreateViewset(viewsets.ModelViewSet):
     serializer_class = PostCreateSerializer
