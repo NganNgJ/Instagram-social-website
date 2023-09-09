@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User 
+from web_api.models import (
+    Post,UploadFile,UserTag
+)
 
-
+#tận dụng validate, create, post trong serializer
 
 class RegistrationSerializer(serializers.ModelSerializer):
     
@@ -25,3 +28,17 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
         
+class UploadFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadFile
+        fields = '__all__'
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Post 
+        fields = '__all__'
+
+    def create(self,validated_data):
+        post = Post.objects.create(**validated_data)
+        return post
