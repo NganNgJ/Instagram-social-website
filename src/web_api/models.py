@@ -30,11 +30,17 @@ class Friend(AbstractEntity, models.Model):
 class Post(AbstractEntity, models.Model):
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_posts')
-    tagged_user = models.ManyToManyField(User, related_name= 'tagged_in_posts') #checking later
     is_hidden = models.BooleanField(default=False)
     
     class Meta:
         db_table = 'posts'
+    
+class UserTag(AbstractEntity, models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'user_tags')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name= 'users')
+    
+    class Meta:
+        db_table = 'usertags'
 
 class Image(AbstractEntity,models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE,null=True, related_name= 'images')

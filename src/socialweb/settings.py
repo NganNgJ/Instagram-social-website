@@ -16,6 +16,8 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_ROOT = ''
+MEDIA_URL = ''
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,8 +29,7 @@ SECRET_KEY = 'django-insecure-$66&tdzvm*j*lx#5^w)dybr@jyae4lfoa1zgki87q8(ht#1r3l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -95,13 +96,11 @@ WSGI_APPLICATION = 'socialweb.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('MYSQL_DATABASE'), # Tên database
         'USER': os.getenv('MYSQL_USER'),     # Tên người dùng
         'PASSWORD': os.getenv('MYSQL_PASSWORD'), # Mật khẩu
-        'HOST': os.getenv('DB_HOST'), # Tên host của container MySQL
+        'HOST': os.getenv('MYSQL_HOST'), # Tên host của container MySQL
     }
 }
 
@@ -148,3 +147,4 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

@@ -5,3 +5,4 @@ PyJWT==1.7.1
 markdown==3.2.1
 django-filter==2.4.0
 mysqlclient==2.0.1
+Pillow==8.4.0

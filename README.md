@@ -30,7 +30,7 @@ Check docker-compose.yml
 
 #### Migrate database 
 1. Execute to container application 
-> *docker exec -it social-web /bin/bash*
+> *docker exec -it social_api /bin/bash*
 
 2. Run migrate in order to all default dbs's Django  (one time)
 > *python manage.py migrate*
