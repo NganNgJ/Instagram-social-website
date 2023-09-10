@@ -14,9 +14,8 @@ from .models import (
 from .serializers import (
     RegistrationSerializer,
     UploadFileSerializer,
-    PostCreateSerializer
+    PostSerializer
 )
-import uuid
 
 
 class RegistrationAPIview(generics.GenericAPIView):
@@ -42,6 +41,6 @@ class UploadFileViewset(viewsets.ModelViewSet):
         serializer.save(file_type = file_type)
 
 
-class PostCreateViewset(viewsets.ModelViewSet):
-    serializer_class = PostCreateSerializer
+class PostViewset(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
     queryset = Post.objects.all().order_by('-id')
