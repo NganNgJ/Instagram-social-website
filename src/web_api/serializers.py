@@ -37,7 +37,7 @@ class UploadFileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class PostCreateSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     file_ids = serializers.ListField(write_only=False, required=False)
     tagged_user_ids = serializers.ListField(write_only=False, required=False)
     user_id = serializers.CharField(required=True, allow_null=False, write_only=True)
