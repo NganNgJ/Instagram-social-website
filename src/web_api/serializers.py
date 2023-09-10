@@ -36,19 +36,6 @@ class UploadFileSerializer(serializers.ModelSerializer):
         model = UploadFile
         fields = '__all__'
 
-class PostFileSerializer(serializers.ModelSerializer):
-    file = UploadFileSerializer(read_only=True)
-
-    class Meta:
-        model = PostFile
-        fields = '__all__'
-
-class UserTagSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model= UserTag
-        fields = '__all__'
 
 class PostCreateSerializer(serializers.ModelSerializer):
     file_ids = serializers.ListField(write_only=False, required=False)
