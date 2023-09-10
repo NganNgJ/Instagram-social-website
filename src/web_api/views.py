@@ -16,7 +16,6 @@ from .serializers import (
     UploadFileSerializer,
     PostCreateSerializer
 )
-import uuid
 
 
 class RegistrationAPIview(generics.GenericAPIView):
