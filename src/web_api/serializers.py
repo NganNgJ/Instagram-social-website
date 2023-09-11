@@ -1,7 +1,13 @@
 from rest_framework import serializers
+from rest_framework import status
+from rest_framework.response import Response
 from django.contrib.auth.models import User 
 from web_api.models import (
-    Post,UploadFile,UserTag,PostFile
+    Post,
+    UploadFile,
+    UserTag,
+    PostFile,
+    Reaction
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -81,6 +87,40 @@ class PostSerializer(serializers.ModelSerializer):
         return post
     
 
+class ReactionSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Reaction
+        fields = '__all__'
     
+    def create(self, validated_data):
+        user_id = validated_data['user_id']
+        post_id = validated_data['post_id']
+
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            post = None
+
+        reaction_filter = Reaction.objects.filter(user_id=user_id, post_id=post_id).first()
+
+        if reaction_filter is None:
+            new_reaction = Reaction.objects.create(user_id=user_id, post_id=post_id)
+            post.count_reacts = post.count_reacts+1
+            post.save()
+            return new_reaction
+            
+        else:
+            reaction_filter.delete()
+            post.count_reacts = post.count_reacts-1
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+            
+        
+        
+
 
     
