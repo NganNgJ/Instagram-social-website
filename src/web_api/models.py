@@ -63,6 +63,7 @@ class PostFile(AbstractEntity, models.Model):
 class Reaction(AbstractEntity, models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_reacts')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_reacts')
+    react_type = models.CharField(max_length=20, null=False, default= 'NOT_REACT')
     
     class Meta:
         db_table= 'reactions'

@@ -50,4 +50,5 @@ class PostViewset(viewsets.ModelViewSet):
 class ReactionViewset(viewsets.ModelViewSet):
     serializer_class = ReactionSerializer
     queryset = Reaction.objects.all()
+
     
