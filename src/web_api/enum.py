@@ -15,3 +15,10 @@ class ChoiceEnum(Enum):
 class Status(ChoiceEnum):
     ACTIVE = 'Active'
     INACTIVE = 'Inactive'
+
+
+class ReactionType(ChoiceEnum):
+    NONE = 'NOT_REACT'
+    REACTION = 'LOVE'
+    
+

@@ -31,6 +31,7 @@ class Post(AbstractEntity, models.Model):
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_posts')
     is_hidden = models.BooleanField(default=False)
+    count_reacts = models.IntegerField(default=0)
     
     class Meta:
         db_table = 'posts'
@@ -60,15 +61,16 @@ class PostFile(AbstractEntity, models.Model):
 
 
 class Reaction(AbstractEntity, models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'reactions')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_reacts')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_reacts')
+    react_type = models.CharField(max_length=20, null=False, default= 'NOT_REACT')
     
     class Meta:
         db_table= 'reactions'
 
 
 class Comment(AbstractEntity, models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'comments')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_comments')
     description = models.TextField()
     
@@ -76,7 +78,7 @@ class Comment(AbstractEntity, models.Model):
         db_table= 'comments'
 
 class Share(AbstractEntity, models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'shares')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_shares')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_shares')
     
     class Meta:

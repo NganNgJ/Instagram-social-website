@@ -1,7 +1,16 @@
 from rest_framework import serializers
+from rest_framework import status
+from rest_framework.response import Response
 from django.contrib.auth.models import User 
+from web_api.enum import (
+    ReactionType
+)
 from web_api.models import (
-    Post,UploadFile,UserTag,PostFile
+    Post,
+    UploadFile,
+    UserTag,
+    PostFile,
+    Reaction
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -81,6 +90,58 @@ class PostSerializer(serializers.ModelSerializer):
         return post
     
 
+class ReactionSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    react_type = serializers.CharField(required=True, allow_null=False, write_only=True)
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Reaction
+        fields = '__all__'
     
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+        post_id = args.get('post_id', None)
+        react_type = args.get('react_type', None)
+
+        post = Post.objects.filter(id=post_id)
+        
+        if not post.exists(): 
+            raise serializers.ValidationError({'posts':('This post does not exist')})
+        if not User.objects.filter(id=user_id).exists():
+            raise serializers.ValidationError({'users':('This user does not exist')})
+        if react_type not in [item.value for item in ReactionType]:
+            raise serializers.ValidationError({'react_type':('Invalid react_type')})
+        
+        return super().validate(args) 
+    
+    def create(self, validated_data):
+        user_id = validated_data.get('user_id')
+        post_id = validated_data.get('post_id')
+        react_type = validated_data.get('react_type')
+    
+        reaction_filter = Reaction.objects.filter(user_id=user_id, post_id=post_id).first()
+
+        if reaction_filter:
+            reaction_filter.react_type = react_type
+            reaction_filter.save()
+            self.update_post_reacts_count(post_id)
+            return reaction_filter
+        
+        new_reaction = Reaction.objects.create(user_id=user_id, post_id=post_id, react_type=react_type)
+        self.update_post_reacts_count(validated_data['post_id']) 
+        return new_reaction
+    
+   
+    def update_post_reacts_count(self, post_id):
+        love_reacts_count = Reaction.objects.filter(post_id=post_id, react_type=ReactionType.REACTION.value).count()
+        post = Post.objects.get(id=post_id)
+        post.count_reacts = love_reacts_count
+        post.save()
+        
+        
+        
+
 
     

@@ -9,12 +9,13 @@ from web_api.enum import (
     Status
 )
 from .models import (
-    Post,UploadFile
+    Post,UploadFile,Reaction
 )
 from .serializers import (
     RegistrationSerializer,
     UploadFileSerializer,
-    PostSerializer
+    PostSerializer,
+    ReactionSerializer
 )
 
 
@@ -44,3 +45,10 @@ class UploadFileViewset(viewsets.ModelViewSet):
 class PostViewset(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.all().order_by('-id')
+
+
+class ReactionViewset(viewsets.ModelViewSet):
+    serializer_class = ReactionSerializer
+    queryset = Reaction.objects.all()
+
+    
