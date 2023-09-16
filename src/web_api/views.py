@@ -1,4 +1,5 @@
-from rest_framework.response import Response 
+from rest_framework.response import Response
+from django.http import JsonResponse 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from web_api.error_codes import ERROR_CODES
@@ -9,13 +10,14 @@ from web_api.enum import (
     Status
 )
 from .models import (
-    Post,UploadFile,Reaction
+    Post,UploadFile,Reaction,Comment
 )
 from .serializers import (
     RegistrationSerializer,
     UploadFileSerializer,
     PostSerializer,
-    ReactionSerializer
+    ReactionSerializer,
+    CommentSerializer
 )
 
 
@@ -49,6 +51,23 @@ class PostViewset(viewsets.ModelViewSet):
 
 class ReactionViewset(viewsets.ModelViewSet):
     serializer_class = ReactionSerializer
-    queryset = Reaction.objects.all()
+    queryset = Reaction.objects.all().order_by('-id')
 
-    
+
+class CommentViewset(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all().order_by('-id')
+
+    def list(self, request):
+        comment_list = self.queryset.filter(is_hidden=False).order_by('-id')
+        serializer = CommentSerializer(comment_list, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        comment_id = self.kwargs['pk']
+        comment = Comment.objects.get(id=comment_id)
+        if comment.is_hidden is True :
+            return JsonResponse({'message': 'This comment is already deleted'})
+        comment.is_hidden = True
+        comment.save()
+        return JsonResponse({'message': 'You deleted successfully'})

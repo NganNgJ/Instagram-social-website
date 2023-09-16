@@ -37,8 +37,8 @@ class Post(AbstractEntity, models.Model):
         db_table = 'posts'
     
 class UserTag(AbstractEntity, models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'user_tags')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name= 'user_tags')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=False, related_name= 'user_tags')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_tags')
     
     class Meta:
         db_table = 'usertags'
@@ -61,7 +61,7 @@ class PostFile(AbstractEntity, models.Model):
 
 
 class Reaction(AbstractEntity, models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_reacts')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=False, related_name= 'post_reacts')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_reacts')
     react_type = models.CharField(max_length=20, null=False, default= 'NOT_REACT')
     
@@ -70,15 +70,16 @@ class Reaction(AbstractEntity, models.Model):
 
 
 class Comment(AbstractEntity, models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_comments')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=False, related_name= 'post_comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_comments')
     description = models.TextField()
+    is_hidden = models.BooleanField(default=False)
     
     class Meta:
         db_table= 'comments'
 
 class Share(AbstractEntity, models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name= 'post_shares')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=False, related_name= 'post_shares')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_shares')
     
     class Meta:

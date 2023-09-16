@@ -10,7 +10,8 @@ from web_api.models import (
     UploadFile,
     UserTag,
     PostFile,
-    Reaction
+    Reaction,
+    Comment
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -91,11 +92,12 @@ class PostSerializer(serializers.ModelSerializer):
     
 
 class ReactionSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    post = PostSerializer(read_only=True)
     user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     react_type = serializers.CharField(required=True, allow_null=False, write_only=True)
-    user = UserSerializer(read_only=True)
-
+    
     class Meta:
         model = Reaction
         fields = '__all__'
@@ -140,6 +142,52 @@ class ReactionSerializer(serializers.ModelSerializer):
         post.count_reacts = love_reacts_count
         post.save()
         
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    post = PostSerializer(read_only=True)
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+    
+
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+        post_id = args.get('post_id', None)
+
+        post = Post.objects.filter(id=post_id)
+        user = User.objects.filter(id=user_id)
+
+        
+        if not post.exists(): 
+            raise serializers.ValidationError({'posts':('This post does not exist')})
+        if not user.exists():
+            raise serializers.ValidationError({'users':('This user does not exist')})
+        
+        return super().validate(args)  
+    
+    def create(self, validated_data):
+        user_id = validated_data.get('user_id')
+        post_id = validated_data.get('post_id')
+        description = validated_data.get('description')
+
+        comment_filter = Comment.objects.filter(user_id=user_id, post_id=post_id).first()
+
+        if comment_filter:
+            comment_filter.description = description
+            comment_filter.save()
+            return comment_filter
+
+        new_comment = Comment.objects.create(**validated_data)
+        return new_comment
+    
+
+
+   
+
         
         
 
