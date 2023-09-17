@@ -11,7 +11,8 @@ from web_api.models import (
     UserTag,
     PostFile,
     Reaction,
-    Comment
+    Comment,
+    CommentReply,
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -170,22 +171,58 @@ class CommentSerializer(serializers.ModelSerializer):
         return super().validate(args)  
     
     def create(self, validated_data):
-        user_id = validated_data.get('user_id')
-        post_id = validated_data.get('post_id')
-        description = validated_data.get('description')
-
-        comment_filter = Comment.objects.filter(user_id=user_id, post_id=post_id).first()
-
-        if comment_filter:
-            comment_filter.description = description
-            comment_filter.save()
-            return comment_filter
-
         new_comment = Comment.objects.create(**validated_data)
         return new_comment
     
+    def update(self, instance, validated_data): 
+        user_id = validated_data['user_id']
+        post_id = validated_data['post_id']
 
+        if instance.user_id != user_id or instance.post_id != post_id:
+            raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this comment'})
 
+        instance.description = validated_data['description']
+        instance.save()
+        return instance 
+
+class CommentReplySerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    comment = CommentSerializer(read_only=True)
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    comment_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+
+    class Meta:
+        model = CommentReply
+        fields = '__all__'       
+    
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+        comment_id = args.get('comment_id', None)
+
+        comment = Comment.objects.filter(id=comment_id)
+        user = User.objects.filter(id=user_id)
+        
+        if not comment.exists(): 
+            raise serializers.ValidationError({'comments':('This comment does not exist')})
+        if not user.exists():
+            raise serializers.ValidationError({'users':('This user does not exist')})
+        
+        return super().validate(args) 
+     
+    def create(self, validated_data):
+        new_comment_reply = CommentReply.objects.create(**validated_data)
+        return new_comment_reply
+    
+    def update(self, instance, validated_data): 
+        user_id = validated_data['user_id']
+        comment_id = validated_data['comment_id']
+
+        if instance.user_id != user_id or instance.comment_id != comment_id:
+            raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this comment'})
+
+        instance.description = validated_data['description']
+        instance.save()
+        return instance 
    
 
         

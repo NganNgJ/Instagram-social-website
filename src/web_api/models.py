@@ -78,6 +78,15 @@ class Comment(AbstractEntity, models.Model):
     class Meta:
         db_table= 'comments'
 
+class CommentReply(AbstractEntity,models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name='user_replies')
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=False, related_name='comment_replies')
+    description = models.TextField()
+    is_hidden = models.BooleanField(default=False)
+    
+    class Meta:
+        db_table = 'comment_replies'
+
 class Share(AbstractEntity, models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=False, related_name= 'post_shares')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_shares')

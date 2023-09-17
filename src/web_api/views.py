@@ -10,14 +10,15 @@ from web_api.enum import (
     Status
 )
 from .models import (
-    Post,UploadFile,Reaction,Comment
+    Post,UploadFile,Reaction,Comment,CommentReply
 )
 from .serializers import (
     RegistrationSerializer,
     UploadFileSerializer,
     PostSerializer,
     ReactionSerializer,
-    CommentSerializer
+    CommentSerializer,
+    CommentReplySerializer
 )
 
 
@@ -70,4 +71,22 @@ class CommentViewset(viewsets.ModelViewSet):
             return JsonResponse({'message': 'This comment is already deleted'})
         comment.is_hidden = True
         comment.save()
+        return JsonResponse({'message': 'You deleted successfully'})
+    
+class CommentReplyViewset(viewsets.ModelViewSet):
+    serializer_class = CommentReplySerializer
+    queryset = CommentReply.objects.all().order_by('-id')
+
+    def list(self, request):
+        comment_reply_list = self.queryset.filter(is_hidden=False).order_by('-id')
+        serializer = CommentReplySerializer(comment_reply_list, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        comment_reply_id = self.kwargs['pk']
+        comment_reply = CommentReply.objects.get(id=comment_reply_id)
+        if comment_reply.is_hidden is True :
+            return JsonResponse({'message': 'This comment is already deleted'})
+        comment_reply.is_hidden = True
+        comment_reply.save()
         return JsonResponse({'message': 'You deleted successfully'})
