@@ -10,7 +10,7 @@ from web_api.enum import (
     Status
 )
 from .models import (
-    Post,UploadFile,Reaction,Comment
+    Post,UploadFile,Reaction,Comment,Share
 )
 from .serializers import (
     RegistrationSerializer,
@@ -18,6 +18,7 @@ from .serializers import (
     PostSerializer,
     ReactionSerializer,
     CommentSerializer,
+    ShareSerializeer
 )
 
 
@@ -72,3 +73,15 @@ class CommentViewset(viewsets.ModelViewSet):
         comment.save()
         return JsonResponse({'message': 'You deleted successfully'})
     
+class ShareViewset(viewsets.ModelViewSet):
+    serializer_class = ShareSerializeer
+    queryset = Share.objects.filter(is_hidden=False).order_by('-id')
+
+    def destroy(self, request, *args, **kwargs):
+        share_id = self.kwargs['pk']
+        share = Share.objects.get(id=share_id)
+        if share.is_hidden is True :
+            return JsonResponse({'message': 'This share is already deleted'})
+        share.is_hidden = True
+        share.save()
+        return JsonResponse({'message': 'You deleted successfully'})

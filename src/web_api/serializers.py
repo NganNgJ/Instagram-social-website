@@ -12,6 +12,7 @@ from web_api.models import (
     PostFile,
     Reaction,
     Comment,
+    Share,
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -201,6 +202,45 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
         model = Comment
         exclude = ('post','parent_comment')
 
+
+class ShareSerializeer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    post = PostSerializer(read_only=True)
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+
+    class Meta:
+        model = Share
+        fields = '__all__'
+    
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+        post_id = args.get('post_id', None)
+
+        post = Post.objects.filter(id=post_id)
+        user = User.objects.filter(id=user_id)
+
+        if not post.exists(): 
+            raise serializers.ValidationError({'posts':('This post does not exist')})
+        if not user.exists():
+            raise serializers.ValidationError({'users':('This user does not exist')})
+        
+        return super().validate(args) 
+
+    def create(self, validated_data):
+        new_share = Share.objects.create(**validated_data)
+        return new_share
+    
+    def update(self, instance, validated_data): 
+        user_id = validated_data['user_id']
+        post_id = validated_data['post_id']
+
+        if instance.user_id != user_id or instance.post_id != post_id:
+            raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this post'})
+
+        instance.description = validated_data['description']
+        instance.save()
+        return instance 
         
         
 

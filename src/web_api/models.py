@@ -82,6 +82,8 @@ class Comment(AbstractEntity, models.Model):
 class Share(AbstractEntity, models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=False, related_name= 'post_shares')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_shares')
+    is_hidden = models.BooleanField(default=False)
+    description = models.TextField(blank=True, null=True)
     
     class Meta:
         db_table= 'shares'
