@@ -33,4 +33,3 @@ services:
         condition: service_healthy
     volumes:
       - ./src:/app
-

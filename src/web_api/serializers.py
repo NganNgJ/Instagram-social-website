@@ -10,7 +10,8 @@ from web_api.models import (
     UploadFile,
     UserTag,
     PostFile,
-    Reaction
+    Reaction,
+    Comment,
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -91,11 +92,12 @@ class PostSerializer(serializers.ModelSerializer):
     
 
 class ReactionSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    post = PostSerializer(read_only=True)
     user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     react_type = serializers.CharField(required=True, allow_null=False, write_only=True)
-    user = UserSerializer(read_only=True)
-
+    
     class Meta:
         model = Reaction
         fields = '__all__'
@@ -140,6 +142,65 @@ class ReactionSerializer(serializers.ModelSerializer):
         post.count_reacts = love_reacts_count
         post.save()
         
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    post = PostSerializer(read_only=True)
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    parent_comment_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
+    replies = serializers.SerializerMethodField(read_only=True)
+
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+    
+    def get_replies(self, obj):
+        replies = Comment.objects.filter(parent_comment=obj)
+        serializer = ReplyCommentSerializer(replies, many=True)
+        return serializer.data
+
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+        post_id = args.get('post_id', None)
+        parent_comment_id = args.get('parent_comment_id', None)
+        
+        post = Post.objects.filter(id=post_id)
+        user = User.objects.filter(id=user_id)
+        comment = Comment.objects.filter(id=parent_comment_id, post=post_id)
+
+        
+        if not post.exists(): 
+            raise serializers.ValidationError({'posts':('This post does not exist')})
+        if not user.exists():
+            raise serializers.ValidationError({'users':('This user does not exist')})
+        if parent_comment_id is not None:
+            if not comment.exists():
+                raise serializers.ValidationError({'comments':('This comment does not exist')})
+        
+        return super().validate(args)  
+    
+    def create(self, validated_data):
+        new_comment = Comment.objects.create(**validated_data)
+        return new_comment
+    
+    def update(self, instance, validated_data): 
+        user_id = validated_data['user_id']
+        post_id = validated_data['post_id']
+
+        if instance.user_id != user_id or instance.post_id != post_id:
+            raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this comment'})
+
+        instance.description = validated_data['description']
+        instance.save()
+        return instance 
+
+class ReplyCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        exclude = ('post','parent_comment')
+
         
         
 
