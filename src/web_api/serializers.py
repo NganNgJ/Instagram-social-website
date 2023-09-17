@@ -149,7 +149,7 @@ class CommentSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     parent_comment_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
-    replies = serializers.SerializerMethodField()
+    replies = serializers.SerializerMethodField(read_only=True)
 
 
     class Meta:
