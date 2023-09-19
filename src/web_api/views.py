@@ -50,8 +50,10 @@ class PostViewset(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         post_id = self.kwargs['pk']
-        post = Post.objects.get(id=post_id)
-        if post.is_hidden is True :
+        post = Post.objects.filter(id=post_id).first()
+        if post is None:
+            return JsonResponse({'message': 'Post not found'})
+        if post.is_hidden is True:
             return JsonResponse({'message': 'This post is already deleted'})
         post.is_hidden = True
         post.save()
@@ -74,7 +76,9 @@ class CommentViewset(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         comment_id = self.kwargs['pk']
-        comment = Comment.objects.get(id=comment_id)
+        comment = Comment.objects.filter(id=comment_id).first()
+        if comment is None:
+            return JsonResponse({'message': 'Comment not found'})
         if comment.is_hidden is True :
             return JsonResponse({'message': 'This comment is already deleted'})
         comment.is_hidden = True
