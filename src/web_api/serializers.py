@@ -48,16 +48,34 @@ class UploadFileSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     file_ids = serializers.ListField(write_only=False, required=False)
     tagged_user_ids = serializers.ListField(write_only=False, required=False)
-    user_id = serializers.CharField(required=True, allow_null=False, write_only=True)
-    user = UserSerializer(read_only=True)
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    parent_post_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     medias = serializers.SerializerMethodField(read_only=True)
     tagged_users = serializers.SerializerMethodField(read_only=True)
+    
 
     class Meta:
         model = Post 
         fields = '__all__'
+
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+        parent_post_id = args.get('parent_post_id', None)
+        
+
+        user = User.objects.filter(id=user_id)
+        post_share = Post.objects.filter(id=parent_post_id)
+
+        if not user.exists():
+            raise serializers.ValidationError({'users':('This user does not exist')})
+        if parent_post_id is not None:
+            if not post_share.exists():
+                raise serializers.ValidationError({'message':('This post does not exist')})
+        
+        return super().validate(args)  
 
     def get_medias(self, obj):
         post_files = obj.post_files.all()
@@ -90,6 +108,14 @@ class PostSerializer(serializers.ModelSerializer):
                 pass 
         return post
     
+    def update(self, instance, validated_data):
+        user_id = validated_data['user_id']
+        if instance.user_id != user_id:
+            raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this post'})
+
+        instance.description = validated_data['description']
+        instance.save()
+        return instance 
 
 class ReactionSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
