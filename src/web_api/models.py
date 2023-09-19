@@ -32,6 +32,7 @@ class Post(AbstractEntity, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_posts')
     is_hidden = models.BooleanField(default=False)
     count_reacts = models.IntegerField(default=0)
+    parent_post = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='shares')
     
     class Meta:
         db_table = 'posts'

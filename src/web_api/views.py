@@ -46,7 +46,16 @@ class UploadFileViewset(viewsets.ModelViewSet):
 
 class PostViewset(viewsets.ModelViewSet):
     serializer_class = PostSerializer
-    queryset = Post.objects.all().order_by('-id')
+    queryset = Post.objects.filter(is_hidden=False).order_by('-id')
+
+    def destroy(self, request, *args, **kwargs):
+        post_id = self.kwargs['pk']
+        post = Post.objects.get(id=post_id)
+        if post.is_hidden is True :
+            return JsonResponse({'message': 'This post is already deleted'})
+        post.is_hidden = True
+        post.save()
+        return JsonResponse({'message': 'You deleted successfully'})
 
 
 class ReactionViewset(viewsets.ModelViewSet):
