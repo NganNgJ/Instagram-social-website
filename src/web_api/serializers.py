@@ -12,6 +12,7 @@ from web_api.models import (
     PostFile,
     Reaction,
     Comment,
+    Friend
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -228,7 +229,46 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
         exclude = ('post','parent_comment')
 
         
-        
+class FriendSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    friend = UserSerializer(read_only=True)
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    friend_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
 
+    class Meta:
+        model = Friend 
+        fields = '__all__'
+
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+        friend_id = args.get('friend_id', None)
+
+        user = User.objects.filter(id=user_id)
+        friend = User.objects.filter(id=friend_id)
+
+        if not user.exists():
+            raise serializers.ValidationError({'users':('This follower is not found')})
+        if not friend.exists():
+            raise serializers.ValidationError({'users':('This following is not found')})
+        
+        return super().validate(args)
+    
+    def create(self, validated_data):
+        user_id = validated_data['user_id']
+        friend_id = validated_data['friend_id']
+        
+        friend_info = Friend.objects.filter(user_id=user_id, friend_id=friend_id).first()
+        if friend_info is not None:
+            if friend_info.is_followed is True:
+                friend_info.is_followed = False 
+            else:
+                friend_info.is_followed = True
+            friend_info.save()
+            return friend_info
+
+        new_friend = Friend.objects.create(**validated_data)
+        return new_friend
+       
+    
 
     
