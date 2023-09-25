@@ -10,7 +10,7 @@ from web_api.enum import (
     Status
 )
 from .models import (
-    Post,UploadFile,Reaction,Comment
+    Post,UploadFile,Reaction,Comment,Friend
 )
 from .serializers import (
     RegistrationSerializer,
@@ -18,6 +18,7 @@ from .serializers import (
     PostSerializer,
     ReactionSerializer,
     CommentSerializer,
+    FriendSerializer,
 )
 
 
@@ -85,3 +86,6 @@ class CommentViewset(viewsets.ModelViewSet):
         comment.save()
         return JsonResponse({'message': 'You deleted successfully'})
     
+class FriendViewset(viewsets.ModelViewSet):
+    serializer_class = FriendSerializer
+    queryset=User.objects.all().order_by('-id')

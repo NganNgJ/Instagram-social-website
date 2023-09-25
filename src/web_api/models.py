@@ -18,7 +18,7 @@ class AbstractEntity(models.Model):
 class Friend(AbstractEntity, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_friends')
     friend = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_followers')
-    is_followed = models.BooleanField(default=False)
+    is_followed = models.BooleanField(default=True)
     is_blocked = models.BooleanField(default=False)
 
 
