@@ -89,3 +89,30 @@ class CommentViewset(viewsets.ModelViewSet):
 class FriendViewset(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
     queryset=User.objects.all().order_by('-id')
+
+
+@api_view(['POST'])
+def block_user(request):
+    user_id = request.data.get('user_id')
+    block_user_id = request.data.get('block_user_id')
+
+    user = User.objects.filter(id=user_id).first()
+    block_user = User.objects.filter(id=block_user_id).first()
+
+    if user is None:
+        raise serializers.ValidationError({'users':('This user is not found')})
+    if block_user is None:
+        raise serializers.ValidationError({'users':('This block user is not found')})
+    
+    friend = Friend.objects.filter(user_id=user_id, friend_id=block_user_id).first()
+
+    if friend is None:
+        Friend.objects.create(user_id = user_id, friend_id = block_user_id, is_followed = False, is_blocked = True)
+    else:
+        friend.is_blocked = not friend.is_blocked
+        friend.save()
+
+    if friend.is_blocked:
+        return JsonResponse({'message': '{0} has been blocked by user {1}'.format(block_user.username, user.username)})
+    else:
+        return JsonResponse({'message': '{0} has been unblocked by user {1}'.format(block_user.username, user.username)})

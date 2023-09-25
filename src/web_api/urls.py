@@ -5,7 +5,8 @@ from .views import (
     UploadFileViewset,
     ReactionViewset,
     CommentViewset,
-    FriendViewset
+    FriendViewset,
+    block_user
 )
 
 
@@ -20,5 +21,5 @@ router.register(r'friends',FriendViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
-
+    path('block/',block_user)
 ]

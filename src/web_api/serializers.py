@@ -259,10 +259,7 @@ class FriendSerializer(serializers.ModelSerializer):
         
         friend_info = Friend.objects.filter(user_id=user_id, friend_id=friend_id).first()
         if friend_info is not None:
-            if friend_info.is_followed is True:
-                friend_info.is_followed = False 
-            else:
-                friend_info.is_followed = True
+            friend_info.is_followed = not friend_info.is_followed
             friend_info.save()
             return friend_info
 
