@@ -107,7 +107,7 @@ def block_user(request):
     friend = Friend.objects.filter(user_id=user_id, friend_id=block_user_id).first()
 
     if friend is None:
-        Friend.objects.create(user_id = user_id, friend_id = block_user_id, is_followed = False, is_blocked = True)
+        friend = Friend.objects.create(user_id = user_id, friend_id = block_user_id, is_followed = False, is_blocked = True)
     else:
         friend.is_blocked = not friend.is_blocked
         friend.save()

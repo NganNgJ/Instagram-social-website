@@ -21,5 +21,5 @@ router.register(r'friends',FriendViewset)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('block/',block_user)
+    path('block-user/',block_user)
 ]
