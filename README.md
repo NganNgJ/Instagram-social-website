@@ -1,4 +1,4 @@
-# Project name: ${\color{green}Project \space name}$
+# Project name: Instargram clone
 
 ### 1. Introduction:
 This is a social website project running as Instagram, however, it will have some features that Instagram hasn't supported currently such as download images/video.

@@ -86,3 +86,12 @@ class Share(AbstractEntity, models.Model):
     
     class Meta:
         db_table= 'shares'
+
+class Profile(AbstractEntity, models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profiles')
+    url = models.URLField(max_length=1000, null=True, blank=True)
+    bio = models.TextField(max_length=150, null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatar', blank=True, null=True, )
+
+    class Meta:
+        db_table = 'profiles'

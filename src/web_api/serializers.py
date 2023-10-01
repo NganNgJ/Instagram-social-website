@@ -12,7 +12,8 @@ from web_api.models import (
     PostFile,
     Reaction,
     Comment,
-    Friend
+    Friend,
+    Profile
 )
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -266,6 +267,29 @@ class FriendSerializer(serializers.ModelSerializer):
         new_friend = Friend.objects.create(**validated_data)
         return new_friend
        
-    
 
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
+    posts = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+    def validate(self, args):
+        user_id = args.get('user_id', None)
+
+        user = User.objects.filter(id=user_id)
+        if not user.exists():
+            raise serializers.ValidationError({'users':('This user is not found')})
+        return super().validate(args)
+
+    def get_posts(self, obj):
+        posts = Post.objects.filter(user=obj.user).order_by('-id')
+        serializer = PostSerializer(posts, many=True)
+        return serializer.data
     
+    def create(self, validated_data):
+        return Profile.objects.create(**validated_data)
