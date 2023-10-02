@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from web_api.error_codes import ERROR_CODES
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User 
-from rest_framework import generics,status,serializers,viewsets
+from rest_framework import generics,status,serializers,viewsets, filters
 from web_api.enum import (
     Status
 )
@@ -20,6 +20,7 @@ from .serializers import (
     ReactionSerializer,
     CommentSerializer,
     FriendSerializer,
+    UserSerializer,
     UserProfileSerializer
 )
 
@@ -50,6 +51,8 @@ class UploadFileViewset(viewsets.ModelViewSet):
 class PostViewset(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     pagination_class = CustomPageNumberPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id', 'description']
     queryset = Post.objects.filter(is_hidden=False).order_by('-id')
 
     def destroy(self, request, *args, **kwargs):
@@ -124,4 +127,8 @@ class UserProfileViewset(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
     
-    
+class UserSearchViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['id', 'username', 'first_name' , 'last_name']
