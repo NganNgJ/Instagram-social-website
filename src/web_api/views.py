@@ -4,12 +4,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from web_api.error_codes import ERROR_CODES
 from rest_framework.exceptions import ParseError
-from django.core.paginator import Paginator
 from django.contrib.auth.models import User 
 from rest_framework import generics,status,serializers,viewsets
 from web_api.enum import (
     Status
 )
+from web_api.pagination import CustomPageNumberPagination
 from .models import (
     Post,UploadFile,Reaction,Comment,Friend,Profile
 )
@@ -49,6 +49,7 @@ class UploadFileViewset(viewsets.ModelViewSet):
 
 class PostViewset(viewsets.ModelViewSet):
     serializer_class = PostSerializer
+    pagination_class = CustomPageNumberPagination
     queryset = Post.objects.filter(is_hidden=False).order_by('-id')
 
     def destroy(self, request, *args, **kwargs):
