@@ -4,13 +4,14 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from web_api.error_codes import ERROR_CODES
 from rest_framework.exceptions import ParseError
+from django.core.paginator import Paginator
 from django.contrib.auth.models import User 
 from rest_framework import generics,status,serializers,viewsets
 from web_api.enum import (
     Status
 )
 from .models import (
-    Post,UploadFile,Reaction,Comment,Friend
+    Post,UploadFile,Reaction,Comment,Friend,Profile
 )
 from .serializers import (
     RegistrationSerializer,
@@ -19,6 +20,7 @@ from .serializers import (
     ReactionSerializer,
     CommentSerializer,
     FriendSerializer,
+    UserProfileSerializer
 )
 
 
@@ -116,3 +118,9 @@ def block_user(request):
         return JsonResponse({'message': '{0} has been blocked by user {1}'.format(block_user.username, user.username)})
     else:
         return JsonResponse({'message': '{0} has been unblocked by user {1}'.format(block_user.username, user.username)})
+    
+class UserProfileViewset(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = UserProfileSerializer
+    
+    
