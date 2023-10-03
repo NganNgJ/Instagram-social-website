@@ -7,7 +7,8 @@ from .views import (
     CommentViewset,
     FriendViewset,
     block_user,
-    UserProfileViewset
+    UserProfileViewset,
+    UserSearchViewSet
 )
 
 
@@ -19,6 +20,7 @@ router.register(r'react-post',ReactionViewset)
 router.register(r'comments',CommentViewset)
 router.register(r'friends',FriendViewset)
 router.register(r'user-profile',UserProfileViewset)
+router.register(r'search-user',UserSearchViewSet)
 
 
 urlpatterns = [
