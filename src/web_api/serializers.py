@@ -117,6 +117,18 @@ class PostSerializer(serializers.ModelSerializer):
 
         instance.description = validated_data['description']
         instance.save()
+
+        current_tagged_user_ids = list(instance.user_tags.values_list('user_id', flat=True))
+        #delete all records tagged users first (no need to save historical data)
+        UserTag.objects.filter(post=instance, user_id__in=current_tagged_user_ids).delete()
+        #add new tagged users into usertags
+        new_tagged_user_ids = validated_data.get('tagged_user_ids', [])
+        for user_id in new_tagged_user_ids:
+            try:
+                user= User.objects.get(id=user_id)  
+                UserTag.objects.create(post=instance, user=user)
+            except User.DoesNotExist:
+                pass 
         return instance 
 
 class ReactionSerializer(serializers.ModelSerializer):
