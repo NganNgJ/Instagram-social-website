@@ -6,18 +6,18 @@ This is a social website project running as Instagram, however, it will have som
 ### 2. Features:
 | No | Feature name |<div style="width:425px">Details</div>| API|
 |:---:|:---:|---|---|
-| 1 | Create new post | a. Contents (text) <br> b. Media (Image/Video/Music) <br> c. Files <br> d. Links | `POST`|
+| 1 | Create new post | a. Contents (text) <br> b. Medias (Image/Video/Music/File) | `POST`|
 | 2 | Edit post | a. Allow edit contents <br> b. Add/change people | `PUT` |
 | 3 | Reaction | Like/Dislike | `POST`
-| 4 | Comment | a. Tag friends <br> b. Edit comment | `PUT`|
+| 4 | Comment | a. Tag friends <br> b. Edit comment | `POST`|
 | 5 | Delete | a. Posts <br> b. Comments | `DELETE` |
-| 6 | Download | Allow download image, video
+| 6 | Download | Allow download media | `POST`
 | 7 | Search/filter | a. Contents <br> b. Friends' name <br> c. Tags | `GET` |
-| 8 | List posts | a. Show detail & .... <br> b. Total likes | `GET` |
-| 9 | Add friend | Follow/ Unfollow
-| 10 | Profiles | a. Edit infor <br> b. Upload avatar <br> c. Show profile| `POST`|
-| 11| Settings | a. Block accounts <br> b. Languages |`PUT`|
-| 12| Authentication and permission | a. Create new account <br> b. Check authentication <br> c. Verify OTP | 
+| 8 | List posts | a. Show posts based on pagination <br> b. Total likes | `GET` |
+| 9 | Add friend | Follow/ Unfollow | `POST`
+| 10 | Profiles | a. Edit infor <br> b. Upload avatar <br> c. Show profile| `PUT/POST`|
+| 11| Settings | a. Block accounts <br> b. Languages |`POST`|
+| 12| Authentication and permission | a. Create new account <br> b. Check authentication <br> c. Verify OTP | `POST`
 
 
 ---
