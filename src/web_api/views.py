@@ -59,12 +59,12 @@ class PostViewset(viewsets.ModelViewSet):
         post_id = self.kwargs['pk']
         post = Post.objects.filter(id=post_id).first()
         if post is None:
-            return JsonResponse({'message': 'Post not found'})
+            return ParseError(ERROR_CODES[400003], 400003)
         if post.is_hidden is True:
-            return JsonResponse({'message': 'This post is already deleted'})
+            return ParseError(ERROR_CODES[400009], 400009)
         post.is_hidden = True
         post.save()
-        return JsonResponse({'message': 'You deleted successfully'})
+        return ParseError(ERROR_CODES[400010], 400010)
 
 
 class ReactionViewset(viewsets.ModelViewSet):
@@ -85,12 +85,12 @@ class CommentViewset(viewsets.ModelViewSet):
         comment_id = self.kwargs['pk']
         comment = Comment.objects.filter(id=comment_id).first()
         if comment is None:
-            return JsonResponse({'message': 'Comment not found'})
+            return ParseError(ERROR_CODES[400005], 400005)
         if comment.is_hidden is True :
-            return JsonResponse({'message': 'This comment is already deleted'})
+            return ParseError(ERROR_CODES[400009], 400009)
         comment.is_hidden = True
         comment.save()
-        return JsonResponse({'message': 'You deleted successfully'})
+        return ParseError(ERROR_CODES[400010], 400010)
     
 class FriendViewset(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
@@ -106,9 +106,9 @@ def block_user(request):
     block_user = User.objects.filter(id=block_user_id).first()
 
     if user is None:
-        raise serializers.ValidationError({'users':('This user is not found')})
+        raise ParseError(ERROR_CODES[4000002], 400002)
     if block_user is None:
-        raise serializers.ValidationError({'users':('This block user is not found')})
+        raise ParseError(ERROR_CODES[400011], 400011)
     
     friend = Friend.objects.filter(user_id=user_id, friend_id=block_user_id).first()
 
