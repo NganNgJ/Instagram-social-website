@@ -293,3 +293,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         return Profile.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        bio = validated_data.get('bio', instance.bio)
+        url = validated_data.get('url', instance.url)
+
+        new_avatar = validated_data.get('avatar', None)
+        if new_avatar:
+            instance.avatar = new_avatar
+
+        instance.bio = bio
+        instance.url = url
+        instance.save()
+
+        return instance
