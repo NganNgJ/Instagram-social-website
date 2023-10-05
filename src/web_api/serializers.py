@@ -113,10 +113,12 @@ class PostSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         user_id = validated_data['user_id']
         if instance.user_id != user_id:
+            # TODO: All error message should be using from error_codes.py file
             raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this post'})
 
         instance.description = validated_data['description']
         instance.save()
+        # TODO: Update tagged users here
         return instance 
 
 class ReactionSerializer(serializers.ModelSerializer):
