@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from rest_framework import status
+from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from django.contrib.auth.models import User 
 from web_api.enum import (
     ReactionType
 )
+from web_api.error_codes import(ERROR_CODES)
 from web_api.models import (
     Post,
     UploadFile,
@@ -72,10 +74,10 @@ class PostSerializer(serializers.ModelSerializer):
         post_share = Post.objects.filter(id=parent_post_id)
 
         if not user.exists():
-            raise serializers.ValidationError({'users':('This user does not exist')})
+            raise ParseError(ERROR_CODES[400002], 400002)
         if parent_post_id is not None:
             if not post_share.exists():
-                raise serializers.ValidationError({'message':('This post does not exist')})
+                raise ParseError(ERROR_CODES[400003], 400003)
         
         return super().validate(args)  
 
@@ -113,7 +115,7 @@ class PostSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         user_id = validated_data['user_id']
         if instance.user_id != user_id:
-            raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this post'})
+            raise ParseError(ERROR_CODES[400001], 400001)
 
         instance.description = validated_data['description']
         instance.save()
@@ -150,11 +152,11 @@ class ReactionSerializer(serializers.ModelSerializer):
         post = Post.objects.filter(id=post_id)
         
         if not post.exists(): 
-            raise serializers.ValidationError({'posts':('This post does not exist')})
+            raise ParseError(ERROR_CODES[400003], 400003)
         if not User.objects.filter(id=user_id).exists():
-            raise serializers.ValidationError({'users':('This user does not exist')})
+            raise ParseError(ERROR_CODES[400002], 400002)
         if react_type not in [item.value for item in ReactionType]:
-            raise serializers.ValidationError({'react_type':('Invalid react_type')})
+            raise ParseError(ERROR_CODES[400004], 400004)
         
         return super().validate(args) 
     
@@ -212,12 +214,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
         
         if not post.exists(): 
-            raise serializers.ValidationError({'posts':('This post does not exist')})
+            raise ParseError(ERROR_CODES[400003], 400003)
         if not user.exists():
-            raise serializers.ValidationError({'users':('This user does not exist')})
+            raise ParseError(ERROR_CODES[400002], 400002)
         if parent_comment_id is not None:
             if not comment.exists():
-                raise serializers.ValidationError({'comments':('This comment does not exist')})
+                raise ParseError(ERROR_CODES[400005], 400005)
         
         return super().validate(args)  
     
@@ -230,7 +232,7 @@ class CommentSerializer(serializers.ModelSerializer):
         post_id = validated_data['post_id']
 
         if instance.user_id != user_id or instance.post_id != post_id:
-            raise serializers.ValidationError({'message': 'Error occurs. Can''t edit this comment'})
+            raise ParseError(ERROR_CODES[400006], 400006)
 
         instance.description = validated_data['description']
         instance.save()
@@ -260,9 +262,9 @@ class FriendSerializer(serializers.ModelSerializer):
         friend = User.objects.filter(id=friend_id)
 
         if not user.exists():
-            raise serializers.ValidationError({'users':('This follower is not found')})
+            raise ParseError(ERROR_CODES[400007], 400007)
         if not friend.exists():
-            raise serializers.ValidationError({'users':('This following is not found')})
+            raise ParseError(ERROR_CODES[400008], 400008)
         
         return super().validate(args)
     
@@ -295,7 +297,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         user = User.objects.filter(id=user_id)
         if not user.exists():
-            raise serializers.ValidationError({'users':('This user is not found')})
+            raise ParseError(ERROR_CODES[400002], 400002)
         return super().validate(args)
 
     def get_posts(self, obj):
@@ -305,3 +307,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         return Profile.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        bio = validated_data.get('bio', instance.bio)
+        url = validated_data.get('url', instance.url)
+
+        new_avatar = validated_data.get('avatar', None)
+        if new_avatar:
+            instance.avatar = new_avatar
+
+        instance.bio = bio
+        instance.url = url
+        instance.save()
+
+        return instance
