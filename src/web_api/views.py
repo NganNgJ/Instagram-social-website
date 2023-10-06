@@ -139,11 +139,11 @@ class FileDownloadView(generics.RetrieveAPIView):
     queryset = UploadFile.objects.all()
     serializer_class = UploadFileSerializer
 
-    def get(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         file_path = instance.file.path
         response = HttpResponse(content_type='application/force-download')
-        response['Content-Disposition'] = 'attachment; filename=%s'% smart_str(instance.file.name)
+        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(instance.file.name)
         response['X-Sendfile'] = smart_str(file_path)
         
         return response
