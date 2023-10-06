@@ -11,7 +11,7 @@ This is a social website project running as Instagram, however, it will have som
 | 3 | Reaction | Like/Dislike | `POST`
 | 4 | Comment | a. Tag friends <br> b. Edit comment | `POST`|
 | 5 | Delete | a. Posts <br> b. Comments | `DELETE` |
-| 6 | Download | Allow download media | `POST`
+| 6 | Download | Allow download media | `POST` |
 | 7 | Search/filter | a. Contents <br> b. Friends' name <br> c. Tags | `GET` |
 | 8 | List posts | a. Show posts based on pagination <br> b. Total likes | `GET` |
 | 9 | Add friend | Follow/ Unfollow | `POST`
@@ -21,7 +21,7 @@ This is a social website project running as Instagram, however, it will have som
 
 
 ---
-### 3. Sources
+### 3. Notes
 #### Build containers by Docker compose:
 Check docker-compose.yml 
 > **build**: docker compose up --build -d  
