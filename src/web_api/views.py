@@ -1,11 +1,12 @@
-from rest_framework.response import Response
-from django.http import JsonResponse 
+from rest_framework.response import Response 
+from django.http import JsonResponse, FileResponse,HttpResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from web_api.error_codes import ERROR_CODES
 from rest_framework.exceptions import ParseError
 from django.contrib.auth.models import User 
 from rest_framework import generics,status,serializers,viewsets, filters
+from django.utils.encoding import smart_str
 from web_api.enum import (
     Status
 )
@@ -132,3 +133,18 @@ class UserSearchViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['id', 'username', 'first_name' , 'last_name']
+
+
+class FileDownloadView(generics.RetrieveAPIView):
+    queryset = UploadFile.objects.all()
+    serializer_class = UploadFileSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        file_path = instance.file.path
+        response = HttpResponse(content_type='application/force-download')
+        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(instance.file.name)
+        response['X-Sendfile'] = smart_str(file_path)
+        
+        return response
+

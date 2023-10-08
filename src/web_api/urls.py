@@ -8,7 +8,8 @@ from .views import (
     FriendViewset,
     block_user,
     UserProfileViewset,
-    UserSearchViewSet
+    UserSearchViewSet,
+    FileDownloadView
 )
 
 
@@ -25,5 +26,6 @@ router.register(r'search-user',UserSearchViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('block-user/',block_user)
+    path('block-user/',block_user),
+     path('download/<int:pk>/', FileDownloadView.as_view(), name='file-download'),
 ]
