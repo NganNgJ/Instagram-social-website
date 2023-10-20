@@ -1,5 +1,5 @@
 from rest_framework import routers
-from django.urls import path, include
+from django.urls import path, re_path, include
 from .views import (
     PostViewset,
     UploadFileViewset,
@@ -27,5 +27,5 @@ router.register(r'search-user',UserSearchViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('block-user/',block_user),
-     path('download/<int:pk>/', FileDownloadView.as_view(), name='file-download'),
+    path('download/<int:pk>/', FileDownloadView.as_view(), name='file-download'),
 ]

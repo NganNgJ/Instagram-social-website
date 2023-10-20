@@ -43,8 +43,16 @@ INSTALLED_APPS = [
     'web_api.apps.WebApiConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'ui',
+    'channels',
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 REST_FRAMEWORK = {
      'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -90,6 +98,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'socialweb.wsgi.application'
 
+ASGI_APPLICATION = "socialweb.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
