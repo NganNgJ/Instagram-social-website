@@ -145,6 +145,6 @@ class FileDownloadView(generics.RetrieveAPIView):
         response = HttpResponse(content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(instance.file.name)
         response['X-Sendfile'] = smart_str(file_path)
-        
+
         return response
 
