@@ -9,7 +9,7 @@ from web_api import routing
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('web_api.urls')),
-    path('ui/', include('ui.urls')),
+    # path('ui/', include('ui.urls')),
     path('auth/register',RegistrationAPIview.as_view(),name='register,'),
     path('auth/login', TokenObtainPairView.as_view(), name= 'login'),
     path('auth/refresh-token',TokenRefreshView.as_view(), name= 'refreshtoken'),
