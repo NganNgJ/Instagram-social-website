@@ -95,3 +95,31 @@ class Profile(AbstractEntity, models.Model):
 
     class Meta:
         db_table = 'profiles'
+
+class Room(AbstractEntity, models.Model):
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'rooms'
+
+class UserRoom(AbstractEntity, models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'user_rooms')
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=False, related_name= 'user_rooms')
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'users_rooms'
+
+class Message(AbstractEntity, models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name= 'sender_messages')
+    content = models.TextField()
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=False, related_name= 'message_room')
+    parent_message = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='messages')
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'messages'
+
+
+

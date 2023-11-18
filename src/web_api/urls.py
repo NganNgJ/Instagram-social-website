@@ -9,10 +9,9 @@ from .views import (
     block_user,
     UserProfileViewset,
     UserSearchViewSet,
-    FileDownloadView
+    FileDownloadView,
+
 )
-
-
 
 router = routers.DefaultRouter()
 router.register(r'posts',PostViewset)

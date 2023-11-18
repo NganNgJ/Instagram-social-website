@@ -55,7 +55,6 @@ class PostSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     file_ids = serializers.ListField(write_only=False, required=False)
     tagged_user_ids = serializers.ListField(write_only=False, required=False)
-    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     parent_post_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     medias = serializers.SerializerMethodField(read_only=True)
     tagged_users = serializers.SerializerMethodField(read_only=True)
@@ -65,9 +64,9 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post 
         fields = '__all__'
 
-    def validate(self, args):
-        user_id = args.get('user_id', None)
-        parent_post_id = args.get('parent_post_id', None)
+    def validate(self, validated_data):
+        user_id = self.context['request'].user.id
+        parent_post_id = validated_data.get('parent_post_id', None)
         
 
         user = User.objects.filter(id=user_id)
@@ -79,7 +78,8 @@ class PostSerializer(serializers.ModelSerializer):
             if not post_share.exists():
                 raise ParseError(ERROR_CODES[400003], 400003)
         
-        return super().validate(args)  
+        validated_data['user_id'] = user_id
+        return super().validate(validated_data)
 
     def get_medias(self, obj):
         post_files = obj.post_files.all()
@@ -136,7 +136,6 @@ class PostSerializer(serializers.ModelSerializer):
 class ReactionSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     post = PostSerializer(read_only=True)
-    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     react_type = serializers.CharField(required=True, allow_null=False, write_only=True)
     
@@ -144,10 +143,10 @@ class ReactionSerializer(serializers.ModelSerializer):
         model = Reaction
         fields = '__all__'
     
-    def validate(self, args):
-        user_id = args.get('user_id', None)
-        post_id = args.get('post_id', None)
-        react_type = args.get('react_type', None)
+    def validate(self, validated_data):
+        user_id = self.context['request'].user.id
+        post_id = validated_data.get('post_id', None)
+        react_type = validated_data.get('react_type', None)
 
         post = Post.objects.filter(id=post_id)
         
@@ -158,7 +157,8 @@ class ReactionSerializer(serializers.ModelSerializer):
         if react_type not in [item.value for item in ReactionType]:
             raise ParseError(ERROR_CODES[400004], 400004)
         
-        return super().validate(args) 
+        validated_data['user_id'] = user_id
+        return super().validate(validated_data) 
     
     def create(self, validated_data):
         user_id = validated_data.get('user_id')
@@ -188,7 +188,6 @@ class ReactionSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     post = PostSerializer(read_only=True)
-    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     parent_comment_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     replies = serializers.SerializerMethodField(read_only=True)
@@ -203,10 +202,10 @@ class CommentSerializer(serializers.ModelSerializer):
         serializer = ReplyCommentSerializer(replies, many=True)
         return serializer.data
 
-    def validate(self, args):
-        user_id = args.get('user_id', None)
-        post_id = args.get('post_id', None)
-        parent_comment_id = args.get('parent_comment_id', None)
+    def validate(self, validated_data):
+        user_id = self.context['request'].user.id
+        post_id = validated_data.get('post_id', None)
+        parent_comment_id = validated_data.get('parent_comment_id', None)
         
         post = Post.objects.filter(id=post_id)
         user = User.objects.filter(id=user_id)
@@ -220,8 +219,8 @@ class CommentSerializer(serializers.ModelSerializer):
         if parent_comment_id is not None:
             if not comment.exists():
                 raise ParseError(ERROR_CODES[400005], 400005)
-        
-        return super().validate(args)  
+        validated_data['user_id'] = user_id
+        return super().validate(validated_data)  
     
     def create(self, validated_data):
         new_comment = Comment.objects.create(**validated_data)
@@ -247,16 +246,15 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
 class FriendSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     friend = UserSerializer(read_only=True)
-    user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     friend_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
 
     class Meta:
         model = Friend 
         fields = '__all__'
 
-    def validate(self, args):
-        user_id = args.get('user_id', None)
-        friend_id = args.get('friend_id', None)
+    def validate(self, validated_data):
+        user_id = self.context['request'].user.id
+        friend_id = validated_data.get('friend_id', None)
 
         user = User.objects.filter(id=user_id)
         friend = User.objects.filter(id=friend_id)
@@ -265,8 +263,8 @@ class FriendSerializer(serializers.ModelSerializer):
             raise ParseError(ERROR_CODES[400007], 400007)
         if not friend.exists():
             raise ParseError(ERROR_CODES[400008], 400008)
-        
-        return super().validate(args)
+        validated_data['user_id'] = user_id
+        return super().validate(validated_data)
     
     def create(self, validated_data):
         user_id = validated_data['user_id']
@@ -292,13 +290,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = '__all__'
 
-    def validate(self, args):
-        user_id = args.get('user_id', None)
+    def validate(self, validated_data):
+        user_id = self.context['request'].user.id
 
         user = User.objects.filter(id=user_id)
         if not user.exists():
             raise ParseError(ERROR_CODES[400002], 400002)
-        return super().validate(args)
+        validated_data['user_id'] = user_id
+        return super().validate(validated_data)
 
     def get_posts(self, obj):
         posts = Post.objects.filter(user=obj.user).order_by('-id')
