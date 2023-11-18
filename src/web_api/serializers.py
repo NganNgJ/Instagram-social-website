@@ -55,7 +55,6 @@ class PostSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     file_ids = serializers.ListField(write_only=False, required=False)
     tagged_user_ids = serializers.ListField(write_only=False, required=False)
-    # user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     parent_post_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     medias = serializers.SerializerMethodField(read_only=True)
     tagged_users = serializers.SerializerMethodField(read_only=True)
@@ -137,7 +136,6 @@ class PostSerializer(serializers.ModelSerializer):
 class ReactionSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     post = PostSerializer(read_only=True)
-    # user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     react_type = serializers.CharField(required=True, allow_null=False, write_only=True)
     
@@ -190,7 +188,6 @@ class ReactionSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     post = PostSerializer(read_only=True)
-    # user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     post_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     parent_comment_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     replies = serializers.SerializerMethodField(read_only=True)
@@ -249,7 +246,6 @@ class ReplyCommentSerializer(serializers.ModelSerializer):
 class FriendSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     friend = UserSerializer(read_only=True)
-    # user_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
     friend_id = serializers.IntegerField(required=True, allow_null=False, write_only=True)
 
     class Meta:
